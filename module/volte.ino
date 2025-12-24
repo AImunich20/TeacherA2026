@@ -1,0 +1,29 @@
+#define ANALOG_IN_PIN  36 // ESP32 pin GPIO36 (ADC0) connected to voltage sensor
+#define REF_VOLTAGE    3.3
+#define ADC_RESOLUTION 4096.0
+#define R1             30000.0 // resistor values in voltage sensor (in ohms)
+#define R2             7500.0  // resistor values in voltage sensor (in ohms)
+
+void setup() {
+  Serial.begin(9600);
+
+  // set the ADC attenuation to 11 dB (up to ~3.3V input)
+  analogSetAttenuation(ADC_11db);
+}
+
+void loop() {
+  // read the analog input
+  int adc_value = analogRead(ANALOG_IN_PIN);
+
+  // determine voltage at adc input
+  float voltage_adc = ((float)adc_value * REF_VOLTAGE) / ADC_RESOLUTION;
+
+  // calculate voltage at the sensor input
+  float voltage_in = voltage_adc * (R1 + R2) / R2;
+
+  // print results to serial monitor to 2 decimal places
+  Serial.print("Measured Voltage = ");
+  Serial.println(voltage_in, 2);
+
+  delay(500);
+}
